@@ -10,6 +10,7 @@ def answer(question: str) -> str:
     response = ollama.chat(
         model=CHAT_MODEL,
         messages=[
+            
             {
                 "role": "system",
                 "content": (
