@@ -1,0 +1,12 @@
+So in this project, I tried two different prompts:
+
+1. The refined prompt
+2. The chain of thought prompt
+
+When I tried these two, the refined prompt actually gave me a response Such that it is not so contextually correct,
+and also the response generated is not the response that I expected. In the case of the chain of thought enhanced prompt,
+I see that I have given certain scenarios and the reasoning steps also, and finally I have given the corresponding answer and
+how it should be to the model also prior. I feel that the chain of thought prompt actually gave an answer which is more contextually correct.
+It also gave me the response in the way that I expected, and the response is actually structured in a correct way.
+
+Overall, I feel that the chain of thought prompt works great when compared to the normal refined prompt.
