@@ -1,0 +1,15 @@
+Prompt Injection Mitigation Strategy
+
+Layer 1 — Remove Sensitive Data from Prompts (Root Fix)
+
+Never include passwords, tokens, or credentials inside any LLM prompt. Handle them exclusively via authentication systems (OAuth, SSO, etc.)
+
+
+Layer 2 — Explicit Refusal Instructions in System Prompt
+
+Hardcode refusal rules directly in the system prompt to block credential-related queries and any attempts to override instructions.
+
+
+Layer 3 — Separate Trust Boundaries
+
+Keep the auth system fully isolated from the LLM layer — the model should never have access to login or credential data at any point.
