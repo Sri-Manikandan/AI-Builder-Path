@@ -1,14 +1,15 @@
 from langchain.tools import tool
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_tavily import TavilySearch
 
-_tavily = TavilySearchResults(max_results=3)
+_tavily = TavilySearch(max_results=3)
 
 
 @tool("web_search")
 def web_search(query: str) -> str:
     """Search the web for current information: industry benchmarks, regulatory updates, market trends, and anything not in internal documents."""
     try:
-        results = _tavily.invoke(query)
+        response = _tavily.invoke(query)
+        results = response.get("results", []) if isinstance(response, dict) else []
         if not results:
             return "No web search results found."
         return "\n\n---\n\n".join(

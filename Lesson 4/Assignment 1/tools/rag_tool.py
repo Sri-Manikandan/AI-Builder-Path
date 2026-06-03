@@ -1,8 +1,9 @@
 from langchain.tools import tool
-from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
 from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
+import pypdf
 
 PERSIST_DIR = "./chroma_langchain_db"
 COLLECTION_NAME = "presidio_collection"
@@ -18,10 +19,18 @@ def _get_vector_store() -> Chroma:
     )
 
 
+def _load_pdf(path: str) -> list[Document]:
+    with open(path, "rb") as f:
+        reader = pypdf.PdfReader(f)
+        return [
+            Document(page_content=page.extract_text() or "", metadata={"page": i})
+            for i, page in enumerate(reader.pages)
+        ]
+
+
 def _ingest_if_empty(vector_store: Chroma) -> None:
     if vector_store._collection.count() == 0:
-        loader = PyPDFLoader(PDF_PATH)
-        docs = loader.load()
+        docs = _load_pdf(PDF_PATH)
         splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         chunks = splitter.split_documents(docs)
         vector_store.add_documents(chunks)
