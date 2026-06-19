@@ -6,7 +6,6 @@ from pathlib import Path
 from langchain_core.tools import tool
 from tavily import TavilyClient
 
-# docs/ lives at the project root, one level up from src/
 _DOCS_ROOT = Path(__file__).resolve().parent.parent / "docs"
 
 

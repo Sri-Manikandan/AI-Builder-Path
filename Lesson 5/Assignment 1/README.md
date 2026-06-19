@@ -29,10 +29,9 @@ user query -> Supervisor (classify: it | finance)
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # then fill in your keys
 ```
 
-Required keys in `.env`:
+Create a `.env` file with these keys:
 
 - `OPENAI_API_KEY` — for gpt-4o
 - `TAVILY_API_KEY` — for web search
