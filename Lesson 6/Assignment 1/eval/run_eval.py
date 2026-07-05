@@ -16,7 +16,9 @@ from eval.dataset import DATASET
 
 _RESULTS_PATH = Path(__file__).resolve().parent / "results.json"
 
-trajectory_match = create_trajectory_match_evaluator(trajectory_match_mode="unordered")
+trajectory_match = create_trajectory_match_evaluator(
+    trajectory_match_mode="unordered", tool_args_match_mode="ignore"
+)
 trajectory_judge = create_trajectory_llm_as_judge(
     prompt=TRAJECTORY_ACCURACY_PROMPT, model="openai:gpt-4o-mini"
 )

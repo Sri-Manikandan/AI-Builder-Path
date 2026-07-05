@@ -9,24 +9,39 @@ _config = RailsConfig.from_path(str(_CONFIG_PATH))
 _rails = LLMRails(_config)
 
 
+def _response_text(result) -> str:
+    response = result.response
+    if isinstance(response, list):
+        return response[0].get("content", "") if response else ""
+    return response
+
+
+def _rail_stopped(result, rail_type: str) -> bool:
+    """A rail blocked the message if any activated rail of this type halted the flow."""
+    log = getattr(result, "log", None)
+    activated = getattr(log, "activated_rails", None) if log else None
+    return any(
+        getattr(rail, "type", None) == rail_type and getattr(rail, "stop", False)
+        for rail in activated or []
+    )
+
+
 def check_input(query: str) -> tuple[bool, str]:
     result = _rails.generate(
         messages=[{"role": "user", "content": query}],
-        options=GenerationOptions(rails=["input"]),
+        options=GenerationOptions(rails=["input"], log={"activated_rails": True}),
     )
-    blocked = result.response[0]["content"] if isinstance(result.response, list) else result.response
-    was_blocked = bool(result.output_data.get("triggered_input_rail")) if result.output_data else False
-    return not was_blocked, (blocked if was_blocked else "")
+    was_blocked = _rail_stopped(result, "input")
+    return not was_blocked, (_response_text(result) if was_blocked else "")
 
 
 def check_output(text: str) -> tuple[bool, str]:
     result = _rails.generate(
         messages=[
-            {"role": "context", "content": {"bot_message": text}},
-            {"role": "bot", "content": text},
+            {"role": "user", "content": "(internal output check)"},
+            {"role": "assistant", "content": text},
         ],
-        options=GenerationOptions(rails=["output"]),
+        options=GenerationOptions(rails=["output"], log={"activated_rails": True}),
     )
-    was_blocked = bool(result.output_data.get("triggered_output_rail")) if result.output_data else False
-    fallback = result.response[0]["content"] if isinstance(result.response, list) else result.response
-    return not was_blocked, (fallback if was_blocked else text)
+    was_blocked = _rail_stopped(result, "output")
+    return not was_blocked, (_response_text(result) if was_blocked else text)
